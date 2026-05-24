@@ -1,7 +1,17 @@
+import { useState } from "react";
 import { App } from "../layouts/App";
 
 export const Home = () => { 
+    const [ message, setMessage ] = useState("")
 
+    const handleLogout = () => {
+        console.log("SAINDO DA APLICAÇÃO")
+    }
+
+    const handleFormSubmit = (e) => {
+        event.preventDefault()
+        console.log("PUBLICANDO UM NOVO ALURITTE")
+    }
 
     return (
         <App>
@@ -10,17 +20,30 @@ export const Home = () => {
                     <h1 className="text-sky-500 text-lg lowercase">Aluritter</h1>
                     <div>
                         <span className="text-sm text-gray-500 mr-2">email@exemplo.com</span>
-                        <button type="button" className="bg-red-500 text-white px-2 py-1 rounded text-sm lowercase hover:bg-red-600">Sair</button>
+                        <button type="button" className="bg-red-500 text-white px-2 py-1 rounded text-sm lowercase hover:bg-red-600" onClick={handleLogout}>Sair</button>
                     </div>
                 </header>
                 <div className="container mx-auto p-10">
-                    <form>
+                    <form onSubmit={handleFormSubmit}>
                         <p className="text-sm text-gray-600 pl-2">Aluritte agora mesmo...</p>
                         <div>
-                            <textarea className="resize-none w-full border text-gray-500 p-5 my-2" max-Length={255}rows={3}></textarea>
+                            <textarea 
+                            className="resize-none w-full border text-gray-500 p-5 my-2" 
+                            maxLength={255} 
+                            rows={3} 
+                            onChange={event => setMessage(event.target.value)} 
+                            value={message}></textarea>
                         </div>
                         <div className="flex justify-between">
-                            <p className="text-sm text-green-600">Você ainda pode digitar 255 caracteres</p>
+                            {message.length < 255 ? (
+                                <p className="text-sm text-green-600">
+                                    Você ainda pode digitar {255-message.length}caracteres
+                                </p>
+                            ) : (
+                                <p className="text-sm text-red-600">
+                                    Você esgotou a quantidade de caracteres
+                                </p>
+                            )}
                             <button type="button" className="bg-sky-500 text-white rounded p-2 hover:bg-sky-600">Alurittar</button>
                         </div>
                     </form>
