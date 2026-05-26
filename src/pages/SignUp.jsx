@@ -1,15 +1,29 @@
-import React from "react"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import classNames from "classnames"
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
+// import { getAuth } from "../utils/firebase"
 import { App } from "../layouts/App"
 
 export const SignUp = () => {
+    const [ requesting , setRequesting ] = useState(false)
     const { register, handleSubmit, formState: { errors } } = useForm()
+    const navigate = useNavigate()
+
+    const auth = getAuth()
 
     const handleFormSubmit = ({ email, password }) => {
         console.log("Criando uma nova conta...", email, password)
+        setRequesting(true);
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((credential) => {
+                localStorage.setItem("access-token", credential.user.accessToken)
+                navigate("/");
+            })
+            .catch((error) => console.error(error.message))
+            .finally(() => setRequesting(false))
     }
 
     return (
@@ -60,7 +74,17 @@ export const SignUp = () => {
                             <span className="text-xs text-red-500 pl-1">A senha precisa ter pelo menos 8 caracteres</span>
                         ) : null}
                         </div>
-                    <button type="submit" className="bg-emerald-500 mt-5 p-2 rounded text-slate-100 hover:bg-emerald-600">Criar uma nova conta</button>
+                    <button 
+                        type="submit" 
+                        className={classNames(
+                            "bg-emerald-500 mt-5 p-2 rounded text-slate-100 hover:bg-emerald-600", {
+                                "bg-slate-300": requesting,
+                                "hover:bg-emerald-600": !requesting
+                            })}
+                        disabled={requesting}
+                    >
+                        Criar uma nova conta
+                    </button>
                 </form>
                 <span className="text-sm text-gray-500 mt-2">
                     Já possui uma conta?{" "}
